@@ -28,18 +28,16 @@ if (argv.h || argv.help) {
 }
 
 if (argv.c || argv.config) {
-    var configFile = argv.c ? argv.c : argv.config;
-    var data = fs.readFileSync(configFile);
+    var configFile = path.resolve(argv.c ? argv.c : argv.config);
     util.log('Loading config from ' + configFile);
-    config = JSON.parse(data);
+    config = require(configFile);
 } else {
     config = (function (configFile) {
         if (process.env.SETTINGS_FLAVOR !== undefined) {
-            path = configFile.replace(/\.json$/, '_' + process.env.SETTINGS_FLAVOR + '.json');
+            path = configFile.replace(/\.(js(?:on)?)$/, '_' + process.env.SETTINGS_FLAVOR + '.$1');
         }
         util.log('Loading config from ' + configFile);
-        var data = fs.readFileSync(configFile);
-        return JSON.parse(data);
+        return require(configFile);
     }(path.resolve(__dirname, '..', 'config', 'config.json')));
 }
 
